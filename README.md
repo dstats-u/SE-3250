@@ -1,4 +1,7 @@
 # SE-3250
 Cybercrime and Digital Forensics
 
-[Chapter 3](./pages/chapter3-artifact.html)
+Repo to store files/documents for SE-3250
+
+[Chapter 1](./artifacts/chapter1-artifact.html)
+[Chapter 3](./artifacts/chapter3-artifact.html)
