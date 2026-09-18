@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Layered DDoS Defense: Online Retail Store</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; max-width: 650px; line-height: 1.5; }
+    details { border: 2px solid #ccc; padding: 10px 15px; background: #fff; border-radius: 6px; margin: 8px 0; }
+    summary { cursor: pointer; font-weight: bold; }
+    .detail { margin-top: 10px; padding: 10px; border-left: 4px solid #0055ff; background: #f0f4ff; }
+    .attack { display: none; color: #c00; margin: 4px 0 0; }
+    body.attacking .attack { display: block; }
+  </style>
+</head>
+<body>
+
+  <h1>How an online store stays up during a DDoS attack</h1>
+  <p>ShopNest is a made-up online retail store. Traffic comes in from the internet at the top and passes through six layers before it reaches the servers. Click a layer to see what it stops.</p>
+
+  <button id="attackBtn">Display attack traffic</button>
+  <p class="attack" id="stats">1,000,000 attack requests/sec vs. 2,000 real customer requests/sec (example numbers)</p>
+  
+  <p><b>The internet:</b> customers and a botnet of infected devices</p>
+  <p>↓</p>
+  <h3>Cloud (stops attacks before they reach your network)</h3>
+  <details>
+    <summary>1. CDN and DDoS scrubbing service</summary>
+    <p class="attack">Attack requests reaching this layer: 1,000,000/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> In front of everything, on the provider's global network.</p>
+      <p><b>What it stops:</b> Volumetric floods (UDP floods, DNS and NTP amplification) that try to fill the store's internet connection.</p>
+      <p><b>How it works:</b> Traffic is spread across many data centers, and scrubbing centers drop junk traffic and forward the clean rest. The CDN also serves cached product pages, so the store's servers see fewer requests.</p>
+      <p><b>Example tools:</b> Cloudflare, Akamai, AWS Shield</p>
+    </div>
+  </details>
+  <p>↓</p>
+  <h3>Your network (the store's data center)</h3>
+  <details>
+    <summary>2. Edge firewall</summary>
+    <p class="attack">Attack requests reaching this layer: 50,000/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> At the front door of the data center, before the load balancer.</p>
+      <p><b>What it stops:</b> Traffic on unused ports, spoofed source addresses, and SYN floods.</p>
+      <p><b>How it works:</b> Only web ports (80 and 443) are allowed in. Ingress filtering drops packets with impossible source addresses, and SYN cookies keep half-open connections from filling the connection table.</p>
+      <p><b>Example tools:</b> Palo Alto, Fortinet, Cisco ASA, iptables</p>
+    </div>
+  </details>
+  <p>↓</p>
+  <details>
+    <summary>3. Intrusion prevention system (IPS) and rate limiter</summary>
+    <p class="attack">Attack requests reaching this layer: 20,000/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> Directly behind the firewall, inspecting what it lets through.</p>
+      <p><b>What it stops:</b> Known attack patterns, and single sources sending far more requests than a person would.</p>
+      <p><b>How it works:</b> The IPS matches traffic against attack signatures and blocks it automatically. The rate limiter caps requests per IP address and temporarily bans sources that go over.</p>
+      <p><b>Example tools:</b> Snort, Suricata, Cisco Firepower, NGINX rate limiting</p>
+    </div>
+  </details>
+  <p>↓</p>
+  <details>
+    <summary>4. Web application firewall (WAF) and load balancer</summary>
+    <p class="attack">Attack requests reaching this layer: 5,000/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> Just in front of the web servers.</p>
+      <p><b>What it stops:</b> HTTP floods that look like real shoppers, such as repeated searches and checkout requests.</p>
+      <p><b>How it works:</b> The WAF reads the web requests and challenges suspicious clients with a CAPTCHA or browser check. The load balancer spreads the remaining traffic evenly and avoids servers that are struggling.</p>
+      <p><b>Example tools:</b> AWS WAF, ModSecurity, F5 BIG-IP, HAProxy</p>
+    </div>
+  </details>
+  <p>↓</p>
+  <details>
+    <summary>5. Web and application servers</summary>
+    <p class="attack">Attack requests reaching this layer: 1,000/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> Behind the load balancer, in an autoscaling group.</p>
+      <p><b>What it stops:</b> Whatever slips through. The goal here is to keep serving customers instead of crashing.</p>
+      <p><b>How it works:</b> Servers scale out automatically when load rises. If they are still stressed, the store serves cached pages, queues checkout, and turns off non-essential features.</p>
+      <p><b>Example tools:</b> Autoscaling groups, Redis or Memcached caches, message queues</p>
+    </div>
+  </details>
+  <p>↓</p>
+  <details>
+    <summary>6. Database</summary>
+    <p class="attack">Attack requests reaching this layer: 100/sec</p>
+    <div class="detail">
+      <p><b>Where it sits:</b> On a private network, reachable only from the application servers.</p>
+      <p><b>What it stops:</b> Direct attacks. The database has no public address, so attackers cannot aim at it.</p>
+      <p><b>How it works:</b> A cache answers most repeat reads, and read replicas share the rest, so orders and payment records stay safe while the front of the store is under pressure.</p>
+      <p><b>Example tools:</b> Private subnets, read replicas, connection pooling</p>
+    </div>
+  </details>
+  <p><small>Request counts are made up to show the idea. Each layer catches what the one before it missed, so no single failure takes the store down.</small></p>
+  <script>
+    var btn = document.getElementById("attackBtn");
+    btn.addEventListener("click", function () {
+      var on = document.body.classList.toggle("attacking");
+      btn.textContent = on ? "Stop attack traffic" : "Send attack traffic";
+    });
+  </script>
+</body>
+</html>
