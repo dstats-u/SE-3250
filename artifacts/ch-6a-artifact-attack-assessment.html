@@ -21,6 +21,151 @@
         <button class="btn-primary" onclick="initRound()">New Round / Reshuffle</button>
     </div>
 
+<script>
+const scenarios = [
+    {
+        stage: "Stage 1: Reconnaissance",
+        text: "Passively maps open-source intelligence (OSINT), public DNS records, and corporate job postings with explicit client authorization and defined scope limits.",
+        type: "pentest",
+        explanation: "Authorized penetration testers operate within strict rules of engagement, utilizing OSINT to map the target legally."
+    },
+    {
+        stage: "Stage 1: Reconnaissance",
+        text: "Gathers covert intelligence, employee social media profiles, and dumpster dives without authorization to identify soft targets for spear-phishing.",
+        type: "blackhat",
+        explanation: "Malicious hackers perform unauthorized reconnaissance and footprinting to unearth vulnerabilities without permission."
+    },
+    {
+        stage: "Stage 2: Scanning & Enumeration",
+        text: "Executes controlled vulnerability scans (e.g., Nessus, Nmap) to catalog active ports, services, and known software misconfigurations for a client report.",
+        type: "pentest",
+        explanation: "Controlled scans are used by professionals to evaluate defense posture and provide constructive remediation advice."
+    },
+    {
+        stage: "Stage 2: Scanning & Enumeration",
+        text: "Probes network perimeters using stealth scripts and aggressive port scans to map active hosts and pinpoint unpatched vulnerabilities to exploit.",
+        type: "blackhat",
+        explanation: "Aggressive uninvited scanning is a precursor to an unauthorized intrusion attempt."
+    },
+    {
+        stage: "Stage 3: Exploitation",
+        text: "Carefully validates vulnerabilities using non-destructive exploits or safe proof-of-concept scripts to confirm real-world risk without breaking systems.",
+        type: "pentest",
+        explanation: "Pentest validation ensures safety and business continuity while proving vulnerability exploitability."
+    },
+    {
+        stage: "Stage 3: Exploitation",
+        text: "Deploys custom zero-day exploits or credential stuffing attacks to violently bypass firewalls and breach core administrative databases.",
+        type: "blackhat",
+        explanation: "Black hat actors leverage destructive or forceful entry techniques to compromise restricted assets."
+    },
+    {
+        stage: "Stage 4: Post-Exploitation",
+        text: "Documents access pathways, evaluates lateral movement risks, and halts testing immediately to prevent operational disruption.",
+        type: "pentest",
+        explanation: "Ethical testers stop short of full-scale damage, focusing on documenting risk pathways for the security team."
+    },
+    {
+        stage: "Stage 4: Post-Exploitation",
+        text: "Establishes persistent backdoors, escalates privileges, evades detection tools, and quietly exfiltrates proprietary corporate data.",
+        type: "blackhat",
+        explanation: "Data exfiltration and stealth persistence are core signatures of corporate espionage and black hat operations."
+    }
+];
+
+const stageNames = [
+    "Stage 1: Reconnaissance",
+    "Stage 2: Scanning & Enumeration",
+    "Stage 3: Exploitation",
+    "Stage 4: Post-Exploitation"
+];
+
+let roundScenarios = {};
+let answeredCount = 0;
+let correctCount = 0;
+
+function initRound() {
+    roundScenarios = {};
+    answeredCount = 0;
+    correctCount = 0;
+    document.getElementById('current-score').innerText = correctCount;
+
+    // Pick random scenario
+    stageNames.forEach(stageName => {
+        const stageOptions = scenarios.filter(s => s.stage === stageName);
+        const randomChoice = stageOptions[Math.floor(Math.random() * stageOptions.length)];
+        roundScenarios[stageName] = randomChoice;
+    });
+
+    renderStages();
+}
+
+function renderStages() {
+    const container = document.getElementById('stages-container');
+    container.innerHTML = '';
+
+    stageNames.forEach((stageName, index) => {
+        const scenario = roundScenarios[stageName];
+        
+        const detailsEl = document.createElement('details');
+        detailsEl.open = true;
+        
+        detailsEl.innerHTML = `
+            <summary>${stageName}</summary>
+            <div class="scenario-box">
+                <p style="margin: 0 0 10px 0;"><strong>Behavior:</strong> ${scenario.text}</p>
+                <div class="btn-group" id="buttons-${index}">
+                    <button onclick="makeChoice(${index}, 'pentest', '${scenario.type}')">Authorized Penetration Tester</button>
+                    <button onclick="makeChoice(${index}, 'blackhat', '${scenario.type}')">Black Hat Hacker</button>
+                </div>
+                <div id="feedback-${index}" class="feedback"></div>
+            </div>
+        `;
+        container.appendChild(detailsEl);
+    });
+}
+
+function makeChoice(index, userChoice, actualType) {
+    const btnGroup = document.getElementById(`buttons-${index}`);
+    const buttons = btnGroup.getElementsByTagName('button');
+    const feedbackEl = document.getElementById(`feedback-${index}`);
+    const scenario = roundScenarios[stageNames[index]];
+
+    // Disable buttons after choice
+    for (let btn of buttons) {
+        btn.disabled = true;
+    }
+
+    const isCorrect = (userChoice === actualType);
+    
+    // Highlight correct / incorrect buttons
+    for (let btn of buttons) {
+        if (btn.innerText.includes(userChoice === 'pentest' ? 'Penetration' : 'Black Hat')) {
+            btn.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+        }
+        if (!isCorrect && btn.innerText.includes(actualType === 'pentest' ? 'Penetration' : 'Black Hat')) {
+            btn.classList.add('selected-correct');
+        }
+    }
+
+    if (isCorrect) {
+        correctCount++;
+        feedbackEl.className = 'feedback correct';
+        feedbackEl.innerHTML = `<strong>Correct!</strong> ${scenario.explanation}`;
+    } else {
+        feedbackEl.className = 'feedback incorrect';
+        feedbackEl.innerHTML = `<strong>Incorrect.</strong> ${scenario.explanation}`;
+    }
+
+    feedbackEl.style.display = 'block';
+    document.getElementById('current-score').innerText = correctCount;
+}
+
+// Initialize on page load
+window.onload = function() {
+    initRound();
+};
+</script>
 
 </body>
 </html>
