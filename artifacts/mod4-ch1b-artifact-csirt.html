@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chapter 1 Option 1B: Ransomware IR Playbook Flowchart</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px auto; max-width: 650px; line-height: 1.5; background: #fff; color: #222; }
+        h1 { font-size: 1.4rem; margin-bottom: 5px; }
+        h2 { font-size: 1.15rem; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
+        p.subtitle { font-size: 0.95rem; margin-top: 0; margin-bottom: 20px; color: #555; }
+        
+        details { border: 2px solid #ccc; padding: 10px 15px; background: #fff; color: #222; border-radius: 6px; margin: 12px 0; }
+        summary { cursor: pointer; font-weight: bold; font-size: 1.05rem; }
+        
+        .phase-badge { display: inline-block; background: darkblue; color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-right: 6px; vertical-align: middle; }
+        
+        .scenario-box { margin-top: 10px; padding: 12px; border-left: 4px solid darkblue; background: rgb(200, 245, 255); color: #222; border-radius: 4px; }
+        .scenario-box ul { margin: 6px 0 0 18px; padding: 0; }
+        .scenario-box li { margin-bottom: 4px; }
+        
+        .btn-group { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        button { font-size: 0.95em; padding: 6px 14px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; background: lightgrey; font-weight: bold; }
+        button:hover { background: #e2e8f0; }
+        button.selected-correct { background: #d1fae5; border-color: green; color: darkgreen; }
+        button.selected-incorrect { background: #fee2e2; border-color: red; color: darkred; }
+        
+        .feedback { margin-top: 10px; font-size: 0.9em; padding: 8px; border-radius: 4px; display: none; }
+        .feedback.correct { background: #d1fae5; color: green; border: 1px solid darkgreen; }
+        .feedback.incorrect { background: #fee2e2; color: darkred; border: 1px solid red; }
+
+        .reflection-box { margin-top: 25px; padding: 15px; border: 2px solid darkblue; background: #f8fafc; border-radius: 6px; }
+        .reflection-box h3 { margin-top: 0; font-size: 1.05rem; color: darkblue; }
+
+        .footer-controls { margin-top: 25px; text-align: center; }
+        #score-banner { margin-bottom: 15px; padding: 10px; border: 1px solid lightblue; border-radius: 6px; font-weight: bold; text-align: center; background: #f0f9ff; }
+    </style>
+</head>
+<body>
+
+    <h1>Chapter 1 Option 1B: Ransomware Attack IR Playbook</h1>
+    <p class="subtitle">Structured 6-Phase NIST Incident Response Lifecycle Flowchart & Decision Assessment</p>
+
+    <div id="score-banner">Playbook Readiness Score: <span id="score-display">0</span> / 6 Completed</div>
+
+    <!-- Phase 1 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 1</span> Preparation</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>Maintain immutable, air-gapped offline backups and test restoration monthly.</li>
+                <li>Deploy Endpoint Detection & Response (EDR) across all workstations and servers.</li>
+                <li>Enforce Multi-Factor Authentication (MFA) on VPNs and corporate remote access points.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="1">
+            <button onclick="checkAnswer(this, '1', false)">Pay Ransom Early</button>
+            <button onclick="checkAnswer(this, '1', true)">Maintain Offline Backups & MFA</button>
+            <button onclick="checkAnswer(this, '1', false)">Disable Firewall Rules</button>
+        </div>
+        <div class="feedback" id="fb-1"></div>
+    </details>
+
+    <!-- Phase 2 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 2</span> Detection</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>EDR triggers automated alert on mass file modification and shadow copy deletion (<code>vssadmin</code>).</li>
+                <li>SIEM flags suspicious lateral movement via anomalous PowerShell/SMB network traffic.</li>
+                <li>Help desk receives initial user tickets regarding <code>.locked</code> file extensions and ransom notes.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="2">
+            <button onclick="checkAnswer(this, '2', true)">EDR Alerts & Ransom Notes</button>
+            <button onclick="checkAnswer(this, '2', false)">Manual Log Inspection Only</button>
+            <button onclick="checkAnswer(this, '2', false)">Ignore Alert as False Positive</button>
+        </div>
+        <div class="feedback" id="fb-2"></div>
+    </details>
+
+    <!-- Phase 3 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 3</span> Analysis</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>Identify ransomware strain variant and locate initial compromise vector (e.g., VPN credential theft).</li>
+                <li>Determine scope of encryption and check for exfiltrated sensitive data (double extortion).</li>
+                <li>Classify incident severity level and activate CSIRT Core Team + Legal/PR stakeholders.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="3">
+            <button onclick="checkAnswer(this, '3', false)">Reboot Affected Domain Controllers</button>
+            <button onclick="checkAnswer(this, '3', true)">Identify Ransom Strain & Scope</button>
+            <button onclick="checkAnswer(this, '3', false)">Wipe All Systems Immediately</button>
+        </div>
+        <div class="feedback" id="fb-3"></div>
+    </details>
+
+    <!-- Phase 4 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 4</span> Containment</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>Isolate infected hosts at network level via switch port shutdown or EDR isolation.</li>
+                <li>Disable compromised Active Directory domain accounts and revoke active API/session tokens.</li>
+                <li>Block known command-and-control (C2) IP addresses and malicious domains at the perimeter firewall.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="4">
+            <button onclick="checkAnswer(this, '4', true)">Isolate Hosts & Block C2 IPs</button>
+            <button onclick="checkAnswer(this, '4', false)">Delete Encrypted Files</button>
+            <button onclick="checkAnswer(this, '4', false)">Power Off Core Switches</button>
+        </div>
+        <div class="feedback" id="fb-4"></div>
+    </details>
+
+    <!-- Phase 5 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 5</span> Eradication & Recovery</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>Terminate malicious persistence mechanisms (scheduled tasks, registry run keys, web shells).</li>
+                <li>Rebuild compromised systems from known-clean golden images and patch root vulnerability.</li>
+                <li>Restore business data from validated offline backups and monitor network for re-infection signals.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="5">
+            <button onclick="checkAnswer(this, '5', false)">Decrypt Using Untrusted Keys</button>
+            <button onclick="checkAnswer(this, '5', true)">Rebuild Hosts & Restore Backups</button>
+            <button onclick="checkAnswer(this, '5', false)">Reconnect Machines Unpatched</button>
+        </div>
+        <div class="feedback" id="fb-5"></div>
+    </details>
+
+    <!-- Phase 6 -->
+    <details open>
+        <summary><span class="phase-badge">PHASE 6</span> Post-Incident Activity</summary>
+        <div class="scenario-box">
+            <strong>Actionable Technical & Administrative Procedures:</strong>
+            <ul>
+                <li>Conduct formal "Lessons Learned" meeting within 72 hours of incident closure.</li>
+                <li>Document complete timeline, root cause analysis, and attacker indicators of compromise (IOCs).</li>
+                <li>Update IR playbooks, patch system gaps, and adjust SIEM/EDR detection rules.</li>
+            </ul>
+        </div>
+        <div class="btn-group" data-phase="6">
+            <button onclick="checkAnswer(this, '6', true)">Conduct Lessons Learned & Update Playbook</button>
+            <button onclick="checkAnswer(this, '6', false)">Close Ticket Without Documenting</button>
+            <button onclick="checkAnswer(this, '6', false)">Blame System Administrator</button>
+        </div>
+        <div class="feedback" id="fb-6"></div>
+    </details>
+
+    <div class="footer-controls">
+        <button onclick="resetAssessment()">Reset Playbook Progress</button>
+    </div>
+
+    <script>
+        const phaseCompleted = { '1': false, '2': false, '3': false, '4': false, '5': false, '6': false };
+
+        function checkAnswer(btn, phase, isCorrect) {
+            const group = btn.parentElement;
+            const buttons = group.querySelectorAll('button');
+            const feedback = document.getElementById(`fb-${phase}`);
+
+            buttons.forEach(b => {
+                b.classList.remove('selected-correct', 'selected-incorrect');
+                b.disabled = true;
+            });
+
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                feedback.className = 'feedback correct';
+                feedback.innerText = 'Correct! This procedural action aligns with NIST incident handling standards.';
+                phaseCompleted[phase] = true;
+            } else {
+                btn.classList.add('selected-incorrect');
+                feedback.className = 'feedback incorrect';
+                feedback.innerText = 'Incorrect. Review the phase procedures above and reset to try again.';
+                phaseCompleted[phase] = false;
+            }
+            feedback.style.display = 'block';
+            updateScore();
+        }
+
+        function updateScore() {
+            const score = Object.values(phaseCompleted).filter(Boolean).length;
+            document.getElementById('score-display').innerText = score;
+        }
+
+        function resetAssessment() {
+            for (let i = 1; i <= 6; i++) {
+                phaseCompleted[i.toString()] = false;
+                const feedback = document.getElementById(`fb-${i}`);
+                feedback.style.display = 'none';
+                
+                const group = document.querySelector(`.btn-group[data-phase="${i}"]`);
+                if (group) {
+                    const buttons = group.querySelectorAll('button');
+                    buttons.forEach(b => {
+                        b.disabled = false;
+                        b.classList.remove('selected-correct', 'selected-incorrect');
+                    });
+                }
+            }
+            updateScore();
+        }
+    </script>
+</body>
+</html>
