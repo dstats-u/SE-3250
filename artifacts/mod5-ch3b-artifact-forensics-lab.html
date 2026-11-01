@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Forensics Field Jump Kit: Annotated Inventory Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #eef1f2; --ink: #1d2a30; --muted: #51636b; --panel: #ffffff; --line: #c5d0d4;
+  --case: #2b3a42; --foam: #3b4e58; --foam-hover: #476069; --foam-ink: #f1f5f6;
+  --isolate: #e0a526; --connect: #3aa6b9; --analyze: #7fb069; --protect: #d9715f;
+  --focus: #0b5fff;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12191d; --ink: #e6eef0; --muted: #9db0b7; --panel: #1b252a; --line: #31434b;
+    --case: #0c1215; --foam: #243238; --foam-hover: #2f414a; --focus: #7aa7ff;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12191d; --ink: #e6eef0; --muted: #9db0b7; --panel: #1b252a; --line: #31434b;
+  --case: #0c1215; --foam: #243238; --foam-hover: #2f414a; --focus: #7aa7ff;
+}
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; line-height: 1.55; }
+main { max-width: 980px; margin: 0 auto; padding: 24px 18px 40px; }
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 6px; font-weight: 600; }
+.sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 14px; font-size: .88rem; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.case { background: var(--case); border-radius: 18px; padding: 14px; box-shadow: inset 0 0 0 3px rgba(255,255,255,.07); }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.slot { all: unset; box-sizing: border-box; cursor: pointer; background: var(--foam); color: var(--foam-ink); border-radius: 8px; padding: 12px 12px 12px 16px; min-height: 92px; border-left: 8px solid var(--c); display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+.slot:hover { background: var(--foam-hover); }
+.slot:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.slot[aria-pressed="true"] { background: var(--foam-hover); box-shadow: 0 0 0 3px var(--c); }
+.slot b { font-size: .98rem; font-weight: 600; line-height: 1.25; }
+.slot small { font-size: .78rem; opacity: .85; }
+.wide2 { grid-column: span 2; }
+.wide3 { grid-column: span 3; }
+.isolate { --c: var(--isolate); } .connect { --c: var(--connect); } .analyze { --c: var(--analyze); } .protect { --c: var(--protect); }
+#detail { margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-left: 6px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+#detail h2 { margin: 0 0 4px; font-size: 1.15rem; }
+#detail .cat { color: var(--muted); font-size: .88rem; margin: 0 0 10px; }
+#detail dt { font-weight: 600; margin-top: 8px; }
+#detail dd { margin: 2px 0 0; max-width: 70ch; }
+.caption { margin-top: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+.caption h2 { margin: 0 0 8px; font-size: 1.05rem; }
+.caption p { margin: 0; max-width: 72ch; }
+.wc { color: var(--muted); font-size: .85rem; margin-top: 8px !important; }
+@media (max-width: 640px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .wide2, .wide3 { grid-column: span 2; }
+  h1 { font-size: 1.35rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .slot { transition: background .15s; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Field Jump Kit: Annotated Inventory Map</h1>
+  <p class="sub">A top-down view of an open hard case. Select any compartment to see what it is, what it does, and why it earns a place in the kit.</p>
+
+  <div class="legend" aria-label="Color key">
+    <span><i style="background:var(--isolate)"></i>Isolate</span>
+    <span><i style="background:var(--connect)"></i>Connect safely</span>
+    <span><i style="background:var(--analyze)"></i>Acquire and analyze</span>
+    <span><i style="background:var(--protect)"></i>Protect and document</span>
+  </div>
+
+  <div class="case">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <section id="detail" aria-live="polite">
+    <h2>Select a compartment</h2>
+    <p class="cat"></p>
+  </section>
+</main>
+
+<script>
+const cats = { isolate: "Isolate", connect: "Connect safely", analyze: "Acquire and analyze", protect: "Protect and document" };
+const items = [
+  { id: "laptop", cls: "analyze", size: "wide2", name: "Forensic laptop with SIFT or CAINE", tag: "Dedicated workstation, forensic OS",
+    what: "A laptop reserved for casework only, booting a forensic Linux environment such as SIFT Workstation or CAINE from a verified USB drive.",
+    why: "Forensic distributions mount storage read-only by default and ship with imaging, hashing, and analysis tools. Keeping the laptop dedicated to casework prevents cross-contamination, and keeping it offline stops malware, remote access, and background updates from altering evidence." },
+  { id: "wb", cls: "connect", size: "", name: "Hardware write blocker", tag: "Connects suspect drive",
+    what: "A device placed between the suspect drive and the examiner’s computer. It passes read commands and blocks every write command.",
+    why: "Even simply connecting a drive to a normal OS can change timestamps or file system data. Blocking writes at the hardware level keeps the original media’s hash unchanged, which supports the original’s integrity in court." },
+  { id: "faraday", cls: "isolate", size: "", name: "Faraday bags", tag: "Signal isolation",
+    what: "Shielded pouches that block cellular, Wi-Fi, Bluetooth, and GPS signals.",
+    why: "A seized phone left on a network can receive a remote wipe command or new messages that overwrite evidence. The bag cuts the signal without powering the device down." },
+  { id: "anti", cls: "protect", size: "", name: "Antistatic bags", tag: "Physical protection",
+    what: "Static-dissipative bags for drives, memory cards, and circuit boards.",
+    why: "Electrostatic discharge can damage electronics and corrupt stored data. Each item gets its own bag to prevent damage in transport and storage." },
+  { id: "drives", cls: "analyze", size: "", name: "Sanitized forensic drives", tag: "Destination media",
+    what: "Blank drives wiped and verified before use, with the wipe documented.",
+    why: "Images are written to clean media so no leftover data from earlier cases can be mixed into the new evidence." },
+  { id: "cables", cls: "connect", size: "", name: "Cables and adapters", tag: "SATA, IDE, USB, NVMe",
+    what: "An assortment of interface cables, adapters, and power supplies for different drive types.",
+    why: "Evidence arrives on many kinds of media. Carrying every adapter avoids improvising with non-forensic tools in the field." },
+  { id: "seals", cls: "protect", size: "", name: "Tamper-evident seals, labels, and custody forms", tag: "Chain of custody",
+    what: "Numbered seals, evidence labels, and chain-of-custody forms.",
+    why: "Every transfer of an item is recorded and sealed. A gap in the record, called a break in the chain of custody, gives the opposing side grounds to challenge authenticity." },
+  { id: "fob", cls: "protect", size: "", name: "Security fob and case lock", tag: "Access control",
+    what: "A key fob or badge, plus a locked case, that limits who can open the kit and logs who did.",
+    why: "Restricting access to tools and stored evidence supports the claim that nothing was altered by unauthorized people." },
+  { id: "camera", cls: "protect", size: "wide3", name: "Camera, notebook, and tool log", tag: "Documentation",
+    what: "A camera for photographing the scene and screens, a bound notebook, and a log of every tool and software version used.",
+    why: "Photos and notes show the condition and location of each item as found. A tool log makes the examiner’s steps repeatable by another expert." }
+];
+
+const grid = document.getElementById("grid");
+const detail = document.getElementById("detail");
+
+items.forEach(function (it) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "slot " + it.cls + (it.size ? " " + it.size : "");
+  b.setAttribute("aria-pressed", "false");
+  b.dataset.id = it.id;
+  b.innerHTML = "<b>" + it.name + "</b><small>" + it.tag + "</small>";
+  b.addEventListener("click", function () { select(it.id); });
+  grid.appendChild(b);
+});
+
+function select(id) {
+  const it = items.find(function (x) { return x.id === id; });
+  grid.querySelectorAll(".slot").forEach(function (s) {
+    s.setAttribute("aria-pressed", s.dataset.id === id ? "true" : "false");
+  });
+  const colorVar = { isolate: "--isolate", connect: "--connect", analyze: "--analyze", protect: "--protect" }[it.cls];
+  detail.style.borderLeftColor = "var(" + colorVar + ")";
+  detail.innerHTML = "<h2>" + it.name + "</h2><p class=\"cat\">" + cats[it.cls] + "</p>" +
+    "<dl><dt>What it is</dt><dd>" + it.what + "</dd><dt>Why it’s in the kit</dt><dd>" + it.why + "</dd></dl>";
+}
+
+const words = document.querySelector(".caption p").textContent.trim().split(/\s+/).length;
+document.getElementById("wc").textContent = words + " words";
+</script>
+</body>
+</html>
