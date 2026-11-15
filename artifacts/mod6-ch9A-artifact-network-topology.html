@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chapter 9 Option 9A: Corporate Network Topology</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px auto; max-width: 650px; line-height: 1.5; background: #fff; color: #222; }
+        h1 { font-size: 1.4rem; margin-bottom: 5px; }
+        h2 { font-size: 1.15rem; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
+        p.subtitle { font-size: 0.95rem; margin-top: 0; margin-bottom: 20px; color: #555; }
+        
+        .btn-group { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        button { font-size: 0.95em; padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; background: lightgrey; font-weight: bold; }
+        button:hover { background: #e2e8f0; }
+        button.active { background: #d1fae5; border-color: green; color: darkgreen; }
+        
+        .scenario-box { margin-top: 10px; padding: 15px; border: 2px solid #ccc; background: #f8fafc; border-radius: 6px; }
+        .scenario-box h3 { margin-top: 0; font-size: 1.05rem; color: #111; margin-bottom: 8px; }
+        .scenario-box p { margin: 8px 0; font-size: 0.95rem; }
+        
+        .tech-note { margin-top: 12px; padding: 10px; border-left: 4px solid darkblue; background: rgb(200, 245, 255); color: #222; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <h1>Corporate Network Topology & Security Controls</h1>
+    <p class="subtitle">Chapter 9 Option 9A: Interactive Network Zones & Security Architecture</p>
+
+    <div class="btn-group">
+        <button class="active" onclick="showNode('internet', this)">1. Internet</button>
+        <button onclick="showNode('firewall', this)">2. Firewall</button>
+        <button onclick="showNode('dmz', this)">3. DMZ</button>
+        <button onclick="showNode('nids', this)">4. NIDS</button>
+        <button onclick="showNode('nips', this)">5. NIPS</button>
+        <button onclick="showNode('lan', this)">6. Internal LAN</button>
+    </div>
+
+    <div class="scenario-box" id="contentBox">
+        <!-- Dynamic content -->
+    </div>
+
+<script>
+    const data = {
+        internet: {
+            title: "Untrusted External Internet (Zone 0)",
+            desc: "The open external network containing potential threat actors, public web traffic, and unverified data packets seeking entry into corporate infrastructure.",
+            tech: "Technical Control: No direct internal access; all ingress and egress traffic must traverse perimeter defense layers."
+        },
+        firewall: {
+            title: "Perimeter Stateful Firewall (Zone 1)",
+            desc: "The primary boundary gatekeeper enforcing strict packet filtering, stateful session tracking, and port access rules (e.g. permitting only HTTPS traffic into the DMZ).",
+            tech: "Technical Control: Access Control Lists (ACLs), Stateful Inspection Engine, NAT/PAT mapping."
+        },
+        dmz: {
+            title: "Demilitarized Zone / DMZ (Zone 2)",
+            desc: "An isolated subnet hosting public facing servers (Web, DNS, Mail) accessible from the internet without exposing the secure internal core LAN to direct compromise.",
+            tech: "Technical Control: Isolated VLAN, hardened OS configurations, reverse proxy traffic routing."
+        },
+        nids: {
+            title: "Network-Based IDS / NIDS",
+            desc: "A passive monitoring sensor connected to a switch port mirror (SPAN) that inspects copies of traffic passing through the perimeter, flagging anomalies without blocking live packets.",
+            tech: "Technical Control: Signature and anomaly analysis, out-of-band SNMP/syslog alerts, zero network latency impact."
+        },
+        nips: {
+            title: "Inline Network-Based IPS / NIPS",
+            desc: "An active inline security appliance that inspects packets in real time and automatically drops malicious payloads or terminates active TCP sessions before reaching protected subnets.",
+            tech: "Technical Control: Deep Packet Inspection (DPI), signature matching, automated TCP resets and packet drops."
+        },
+        lan: {
+            title: "Internal Trusted LAN (Zone 3)",
+            desc: "The restricted corporate network containing employee workstations, Active Directory domain controllers, and sensitive proprietary database servers.",
+            tech: "Technical Control: Micro-segmentation, 802.1X port-level security, strict internal multi-factor authentication."
+        }
+    };
+
+    function showNode(key, btn) {
+        document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const item = data[key];
+        document.getElementById('contentBox').innerHTML = `
+            <h3>${item.title}</h3>
+            <p>${item.desc}</p>
+            <div class="tech-note">${item.tech}</div>
+        `;
+    }
+
+    // Init
+    showNode('internet', document.querySelector('button'));
+</script>
+
+</body>
+</html>
